@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    @Value("${jwt.secret-key.public}")
+    @Value("${jwt.secret-key.private}")
     private String jwtPrivateKey;
     @Value("${jwt.secret-key.public}")
     private String jwtPublicKey;
@@ -32,15 +32,19 @@ public class JwtService {
     public String extractType(String token) {
         return extractClaim(token, v -> v.get("type")).toString();
     }
+
     public Role extractRole(String token){
         return extractClaim(token, v -> {
             String z = v.get("role").toString();
-            if(z.equals(Role.CLIENT.name())) return Role.CLIENT;
-            if(z.equals(Role.ADMIN.name())) return Role.ADMIN;
-            if(z.equals(Role.HOMEOWNER.name())) return Role.HOMEOWNER;
-            return Role.UNKNOWN;
+            try {
+                return Role.valueOf(z);
+            }
+            catch (IllegalArgumentException e){
+                return Role.UNKNOWN;
+            }
         });
     }
+
     public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         long live = 2L * 60 * 60 * 1000;
@@ -50,7 +54,7 @@ public class JwtService {
         } else if (userDetails instanceof Client customUserDetails) {
             claims.put("id", customUserDetails.getId());
             claims.put("role", Role.CLIENT);
-            live = 10L * 60 * 60 * 1000;
+            live = 10L  * 60 * 1000;
         }
         claims.put("type", "access");
 
@@ -104,7 +108,7 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtPrivateKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

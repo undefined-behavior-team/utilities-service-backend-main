@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminUser implements UserDetails {
+public class AdminUser implements UserInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -26,9 +26,6 @@ public class AdminUser implements UserDetails {
 
     @Column(length = 150)
     private String password;
-
-    @Column(nullable = false, length = 19)
-    private String phone;
 
     @Column(length = 150, nullable = false)
     private String name;

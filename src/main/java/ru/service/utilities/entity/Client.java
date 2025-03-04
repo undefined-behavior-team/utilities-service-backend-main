@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Client implements UserDetails {
+public class Client implements UserInterface {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,17 +25,21 @@ public class Client implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String firstName;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String lastName;
 
     @Column(length = 50)
     private String middleName;
 
-    @Column(nullable = false, length = 19)
+    @Column(length = 19)
     private String phone;
+
+    public Role getRole(){
+        return Role.CLIENT;
+    }
 
     @Override
     public String getUsername(){
@@ -51,4 +55,5 @@ public class Client implements UserDetails {
     public String getPassword() {
         return "";
     }
+
 }

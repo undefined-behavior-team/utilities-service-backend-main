@@ -20,8 +20,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
+import ru.service.utilities.entity.Role;
+import ru.service.utilities.service.UserService;
 
 import java.util.List;
 
@@ -39,6 +42,9 @@ public class WebSecurityConfig {
 
     @Value("#{'${cors.allowed-origins}'.split(',')}")
     private List<String> allowedOrigins;
+
+    private final UserService userService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, Environment env) throws Exception {
@@ -86,14 +92,12 @@ public class WebSecurityConfig {
                             .requestMatchers(AUTH_WHITELIST).permitAll()
                             .requestMatchers("/users/me").authenticated()
                             .requestMatchers("/users/**").hasRole(Role.ADMIN.name())
-                            .requestMatchers("/conferences", "/conferences/new").hasRole(Role.ADMIN.name())
-                            .requestMatchers(HttpMethod.POST, "/conferences").hasRole(Role.ADMIN.name())
                             .anyRequest().permitAll();
                 })
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(e -> e.accessDeniedHandler(customAccessDeniedHandler)
-                        .authenticationEntryPoint(customAuthenticationEntryPoint));
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                //.exceptionHandling(e -> e.accessDeniedHandler(customAccessDeniedHandler)
+                //        .authenticationEntryPoint(customAuthenticationEntryPoint));
         log.debug("Завершено конфигурирование spring security");
         return http.build();
     }

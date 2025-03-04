@@ -1,5 +1,6 @@
 package ru.service.utilities.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.service.utilities.entity.Role;
+import ru.service.utilities.repository.TokenRepository;
+import ru.service.utilities.service.UserService;
 import ru.service.utilities.service.JwtService;
 
 import java.io.IOException;
@@ -29,8 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
     private final TokenRepository tokenRepository;
-
-
 
     @Override
     protected void doFilterInternal(
@@ -57,13 +59,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.debug("Обработка токена пользователя: {}", username);
 
             if (!jwtService.extractType(token).equals("access")) {
-                tokenRepository.deleteByToken(token);
+                tokenRepository.deleteById(token);
                 filterChain.doFilter(request, response);
                 return;
             }
 
             if (!ObjectUtils.isEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userService.getByUsername(username);
+                Role role = jwtService.extractRole(token);
+                UserDetails userDetails = userService.getByUsernameAndRole(username, role);
+
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                 if (!jwtService.isTokenValid(token, userDetails)) {
