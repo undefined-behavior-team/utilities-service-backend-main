@@ -20,18 +20,17 @@ public class AdminService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-
-
+    
     public ResponseEntity<AuthResponseDTO> login(AdminLoginDTO dto) {
         Optional<AdminUser> optionalAdminUser = adminUserRepository.findByEmail(dto.getEmail());
         if (optionalAdminUser.isEmpty()) {
-            return ResponseEntity.status(404).body(new AuthResponseDTO("Пользователь не найден"));
+            return ResponseEntity.status(401).body(new AuthResponseDTO("Не верный логин или пароль"));
         }
 
         AdminUser adminUser = optionalAdminUser.get();
 
         if (!passwordEncoder.matches(dto.getPassword(), adminUser.getPassword())) {
-            return ResponseEntity.status(401).body(new AuthResponseDTO("Неверный пароль"));
+            return ResponseEntity.status(401).body(new AuthResponseDTO("Не верный логин или пароль"));
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =

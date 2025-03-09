@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -35,6 +36,9 @@ public class Client implements UserInterface {
 
     @Column(length = 19)
     private String phone;
+
+    @OneToMany(targetEntity = AddressClient.class,fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private List<AddressClient> addressClients;
 
     public Role getRole(){
         return Role.CLIENT;

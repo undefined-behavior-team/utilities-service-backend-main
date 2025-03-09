@@ -91,6 +91,7 @@ public class WebSecurityConfig {
                             .requestMatchers(AUTH_WHITELIST).permitAll()
                             .requestMatchers("/users/me").authenticated()
                             .requestMatchers("/users/**").hasRole(Role.ADMIN.name())
+                            .requestMatchers("/test/testing/**").authenticated()
                             .anyRequest().permitAll();
                 })
                 .authenticationProvider(authenticationProvider())

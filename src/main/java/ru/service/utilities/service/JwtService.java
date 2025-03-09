@@ -2,7 +2,9 @@ package ru.service.utilities.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Jwks;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +14,12 @@ import ru.service.utilities.entity.Client;
 import ru.service.utilities.entity.Role;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
+import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,12 +90,12 @@ public class JwtService {
         return claimsResolvers.apply(claims);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Date issuedAt, Date expiration) {
+    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Date issuedAt, Date expiration){
         return Jwts.builder()
                 .claims(extraClaims).subject(userDetails.getUsername())
                 .issuedAt(issuedAt)
                 .expiration(expiration)
-                .signWith(getSigningKey()).compact();
+                .signWith(getPrivateKey(), SignatureAlgorithm.RS256).compact();
     }
 
     private boolean isTokenExpired(String token) {
@@ -98,19 +105,35 @@ public class JwtService {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
+                .verifyWith(getPublicKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtPrivateKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private RSAPublicKey getPublicKey() {
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(jwtPublicKey);
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            return (RSAPublicKey) kf.generatePublic(spec);
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 
-
+    private RSAPrivateKey getPrivateKey() {
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(jwtPrivateKey);
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            return (RSAPrivateKey) kf.generatePrivate(spec);
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
 }
