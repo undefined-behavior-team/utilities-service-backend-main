@@ -1,18 +1,20 @@
 package ru.service.utilities.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "address_client")
+@Table(name = "payment")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressClient {
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -21,18 +23,15 @@ public class AddressClient {
     @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = false)
     private Client client;
 
-    @Column(length = 50)
-    private String town;
+    @NotNull
+    private int amount;
 
-    @Column(length = 150)
-    private String street;
+    @Column(length = 50, nullable = false)
+    private String paymentMethod;
 
-    @Column(length = 20)
-    private String house;
+    @Column(length = 50, nullable = false)
+    private String status;
 
-    @Column(length = 10)
-    private String building;
-
-    @Column(length = 10)
-    private String apartment;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 }

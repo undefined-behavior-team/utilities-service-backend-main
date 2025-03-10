@@ -6,13 +6,13 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "address_client")
+@Table(name = "application_client")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressClient {
+public class ApplicationClient {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -21,18 +21,7 @@ public class AddressClient {
     @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = false)
     private Client client;
 
-    @Column(length = 50)
-    private String town;
-
-    @Column(length = 150)
-    private String street;
-
-    @Column(length = 20)
-    private String house;
-
-    @Column(length = 10)
-    private String building;
-
-    @Column(length = 10)
-    private String apartment;
+    @ManyToOne
+    @JoinColumn(name = "application_id", referencedColumnName = "id", nullable = false)
+    private Application application;
 }

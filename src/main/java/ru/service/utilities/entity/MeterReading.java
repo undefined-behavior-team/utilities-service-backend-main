@@ -3,16 +3,17 @@ package ru.service.utilities.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "address_client")
+@Table(name = "meter_reading")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressClient {
+public class MeterReading {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -21,18 +22,10 @@ public class AddressClient {
     @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = false)
     private Client client;
 
-    @Column(length = 50)
-    private String town;
+    @ManyToOne
+    @JoinColumn(name = "meter_id", referencedColumnName = "id", nullable = false)
+    private Meter meter;
 
-    @Column(length = 150)
-    private String street;
-
-    @Column(length = 20)
-    private String house;
-
-    @Column(length = 10)
-    private String building;
-
-    @Column(length = 10)
-    private String apartment;
+    @Column(nullable = false)
+    private LocalDate createdAt;
 }
