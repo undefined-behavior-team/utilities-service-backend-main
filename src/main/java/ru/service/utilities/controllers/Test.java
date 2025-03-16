@@ -2,6 +2,7 @@ package ru.service.utilities.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.service.utilities.dto.response.AddressClientDto;
 import ru.service.utilities.entity.Client;
 import ru.service.utilities.repository.ClientRepository;
 
@@ -13,6 +14,7 @@ public class Test {
 
     @GetMapping("/testing/{email}")
     public Object client(@PathVariable String email){
-        return clientRepository.findByEmail(email).map(Client::getAddressClients);
+        return clientRepository.findByEmail(email).map(client -> client.getAddressClients().stream().map(AddressClientDto::new));
     }
+
 }

@@ -1,14 +1,15 @@
-package ru.service.utilities.dto.response;
+package ru.service.utilities.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Value;
 
 @Value
-public class AdminLoginDTO {
+public class ClientLoginDTO {
     @NotBlank
     @Email
-    String email;
+    public String email;
+
     @NotBlank
-    String password;
+    public String code;
 }

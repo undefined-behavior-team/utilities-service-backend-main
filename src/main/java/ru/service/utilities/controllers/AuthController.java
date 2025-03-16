@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.service.utilities.dto.request.ClientSignDTO;
-import ru.service.utilities.dto.response.AdminLoginDTO;
+import ru.service.utilities.dto.request.AdminLoginDTO;
 import ru.service.utilities.dto.response.AuthResponseDTO;
-import ru.service.utilities.dto.response.ClientLoginDTO;
+import ru.service.utilities.dto.request.ClientLoginDTO;
 import ru.service.utilities.service.AdminService;
 import ru.service.utilities.service.ClientService;
 

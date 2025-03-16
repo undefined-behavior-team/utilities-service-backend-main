@@ -37,6 +37,10 @@ public class Application {
     private List<ApplicationClient> applicationClients;
 
     @ManyToOne
+    @JoinColumn(name = "homeowner_id", referencedColumnName = "id")
+    private AdminUser adminUser;
+
+    @ManyToOne
     @JoinColumn(name = "address_id",referencedColumnName = "id")
     private AddressClient addressClient;
 }
