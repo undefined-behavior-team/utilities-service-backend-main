@@ -20,6 +20,7 @@ import ru.service.utilities.repository.ClientRepository;
 
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -29,6 +30,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final ClientRepository clientRepository;
     private final ClientHomeownerRepository clientHomeownerRepository;;
+
 
     public ResponseEntity<AuthResponseDTO> login(AdminLoginDTO dto) {
         Optional<AdminUser> optionalAdminUser = adminUserRepository.findByEmail(dto.getEmail());

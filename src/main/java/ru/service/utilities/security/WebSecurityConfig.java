@@ -90,9 +90,13 @@ public class WebSecurityConfig {
                     request
                             .requestMatchers(AUTH_WHITELIST).permitAll()
                             .requestMatchers("/users/me").authenticated()
+                            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .requestMatchers("/users/**").hasRole(Role.ADMIN.name())
                             .requestMatchers("/test/testing/**").authenticated()
-                            .requestMatchers("/admin/add_admin").hasRole(Role.ADMIN.name())
+                            .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                            .requestMatchers("/client/**").hasRole(Role.CLIENT.name())
+                            .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                            .requestMatchers("/homeowner/**").hasRole(Role.HOMEOWNER.name())
                             .anyRequest().permitAll();
                 })
                 .authenticationProvider(authenticationProvider())

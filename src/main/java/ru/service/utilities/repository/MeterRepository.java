@@ -9,4 +9,3 @@ import java.util.UUID;
 @Repository
 public interface MeterRepository extends JpaRepository<Meter, UUID> {
 }
-

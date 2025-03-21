@@ -5,15 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.service.utilities.dto.request.*;
+import ru.service.utilities.dto.response.ApplicationResponseDTO;
 import ru.service.utilities.dto.response.AuthResponseDTO;
+import ru.service.utilities.dto.response.MeterReadingDTO;
 import ru.service.utilities.entity.*;
 import ru.service.utilities.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -172,5 +175,72 @@ public class ClientService {
         applicationClientRepository.save(applicationClient);
 
         return ResponseEntity.ok("Заявка успешно добавлена");
+    }
+
+    public ResponseEntity<List<MeterReadingDTO>> getUserMeterReadings() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+
+        List<MeterReadingDTO> readings = meterReadingRepository.findByClient(client)
+                .stream()
+                .map(MeterReadingDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(readings);
+    }
+
+    public ResponseEntity<List<ApplicationResponseDTO>> getApplication(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+
+        List<ApplicationResponseDTO> applications = applicationClientRepository.findByClient(client)
+                .stream()
+                .map(buffer -> new ApplicationResponseDTO(buffer.getApplication()))
+                .toList();
+
+        return ResponseEntity.ok(applications);
+    }
+
+    public ResponseEntity<ApplicationResponseDTO> getApplicationById(UUID applicationId){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+
+        ApplicationClient applicationClient = applicationClientRepository.findByClientAndApplicationId(client, applicationId)
+                .orElseThrow(() -> new RuntimeException("Заявка не найдена или не принадлежит клиенту"));
+
+        ApplicationResponseDTO responseDTO = new ApplicationResponseDTO(applicationClient.getApplication());
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    public ResponseEntity<ClientUpdateDTO> getClient(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+
+        AddressClient addressClient = addressClientRepository.findByClient(client)
+                .orElseThrow(() -> new RuntimeException("Адрес клиента не найден"));
+
+        AddAddressDTO addressDTO = new AddAddressDTO(
+                addressClient.getTown(),
+                addressClient.getStreet(),
+                addressClient.getHouse(),
+                addressClient.getBuilding(),
+                addressClient.getApartment()
+        );
+
+        ClientUpdateDTO clientUpdateDTO = new ClientUpdateDTO(
+                client.getFirstName(),
+                client.getLastName(),
+                client.getMiddleName(),
+                client.getPhone(),
+                addressDTO
+        );
+
+        return ResponseEntity.ok(clientUpdateDTO);
     }
 }
