@@ -1,21 +1,19 @@
-# Используем OpenJDK 17 для сборки
-FROM eclipse-temurin:17-jdk AS builder
+# Используем OpenJDK 21 для сборки
+FROM eclipse-temurin:21-jdk AS builder
 
 # Создаем рабочую директорию
 WORKDIR /build
 
-# Копируем POM-файл и загружаем зависимости
-COPY pom.xml ./
-RUN mvn dependency:go-offline -B
-
 # Копируем весь проект в контейнер
-COPY src ./src
+COPY . /build/.
+
+RUN chmod +x ./mvnw
 
 # Собираем проект без тестов
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
-# Используем JRE 17 для финального контейнера
-FROM eclipse-temurin:17-jre
+# Используем JRE 21 для финального контейнера
+FROM eclipse-temurin:21-jre
 
 # Создаем рабочую директорию для финального контейнера
 WORKDIR /app
