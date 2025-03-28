@@ -42,8 +42,7 @@ public class ClientService {
                 )
         );
         String code = otpService.generateOtp(email);
-        notificationService.emailCode(code);
-        System.out.println(otpService.checkOtp(email, code));
+        notificationService.emailCode(email, code);
     }
 
 
