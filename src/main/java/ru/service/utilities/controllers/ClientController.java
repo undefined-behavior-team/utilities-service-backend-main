@@ -5,11 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.service.utilities.dto.request.AddApplicationDTO;
-import ru.service.utilities.dto.request.AddMeterDTO;
-import ru.service.utilities.dto.request.AddPaymentDTO;
-import ru.service.utilities.dto.request.ClientUpdateDTO;
+import ru.service.utilities.dto.request.*;
 import ru.service.utilities.dto.response.ApplicationResponseDTO;
+import ru.service.utilities.dto.response.ClientPaymentDTO;
 import ru.service.utilities.dto.response.MeterReadingDTO;
 import ru.service.utilities.service.ClientService;
 
@@ -69,6 +67,12 @@ public class ClientController {
     @GetMapping("/get_client_info")
     public ResponseEntity<ClientUpdateDTO> getClient(){
         return clientService.getClient();
+    }
+
+    @Operation(summary = "Выводит информацию о платежах", description = "Выводит информацию о всех платежах клиента")
+    @GetMapping("/get_client_payment")
+    public ResponseEntity<List<ClientPaymentDTO>> getClientPayment(){
+        return clientService.getPayment();
     }
 
 }

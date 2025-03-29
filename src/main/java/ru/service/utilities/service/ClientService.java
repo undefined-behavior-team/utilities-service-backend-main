@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.service.utilities.dto.request.*;
 import ru.service.utilities.dto.response.ApplicationResponseDTO;
 import ru.service.utilities.dto.response.AuthResponseDTO;
+import ru.service.utilities.dto.response.ClientPaymentDTO;
 import ru.service.utilities.dto.response.MeterReadingDTO;
 import ru.service.utilities.entity.*;
 import ru.service.utilities.repository.*;
@@ -242,5 +243,19 @@ public class ClientService {
         );
 
         return ResponseEntity.ok(clientUpdateDTO);
+    }
+
+    public ResponseEntity<List<ClientPaymentDTO>> getPayment(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+
+        List<ClientPaymentDTO> payments = paymentRepository.findByClient(client)
+                .stream()
+                .map(ClientPaymentDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(payments);
     }
 }
