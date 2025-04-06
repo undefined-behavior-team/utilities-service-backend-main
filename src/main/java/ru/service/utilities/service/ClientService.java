@@ -43,6 +43,7 @@ public class ClientService {
                 )
         );
         String code = otpService.generateOtp(email);
+
         notificationService.emailCode(email, code);
     }
 
